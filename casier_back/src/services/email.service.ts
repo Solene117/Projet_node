@@ -26,6 +26,6 @@ export class EmailService {
 export type EmailRequest = {
     to: string,
     subject: string,
-    text: string,
+    text?: string,
     html?: string
 }
