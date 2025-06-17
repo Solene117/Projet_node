@@ -4,11 +4,11 @@
       <h1 class="text-3xl font-bold text-white">Gestion des casiers</h1>
     </header>
     <main class="w-full max-w-4xl px-4 mt-8">
-      <Locker />
+      <RouterView />
     </main>
   </div>
 </template>
 
 <script setup>
-import Locker from './views/Lockers.vue';
+  import { RouterView } from 'vue-router';
 </script>
