@@ -4,7 +4,7 @@ import Reservation from '../models/Reservation';
 
 export const createReservation = async (req: Request, res: Response) => {
   const {lockerId, durationHours } = req.body;
-  const userId = req.user.id;
+  const userId = req.user._id;
 
   if (!userId || !lockerId || !durationHours) {
     return res.status(400).json({ message: 'Paramètres manquants' });

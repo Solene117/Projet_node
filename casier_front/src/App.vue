@@ -8,13 +8,18 @@
       <div class="flex gap-4 justify-center">
         <button
           @click="toggleView('locker')"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          :disabled="userRole !== 'admin'"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
+          title="Seuls les admins peuvent ajouter un casier"
         >
           {{ activeView === 'locker' ? 'Masquer l’ajout' : 'Ajouter un casier' }}
         </button>
+
         <button
           @click="toggleView('reservation')"
-          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          :disabled="!isLoggedIn"
+          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
+          title="Connectez-vous pour réserver un casier"
         >
           {{ activeView === 'reservation' ? 'Masquer la réservation' : 'Réserver un casier' }}
         </button>
@@ -30,6 +35,9 @@
 import { ref } from 'vue'
 import Locker from './views/Lockers.vue'
 import Reservation from './views/Reservations.vue'
+
+const userRole = ref('user') 
+const isLoggedIn = ref(true)  
 
 const activeView = ref(null)
 

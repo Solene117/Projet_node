@@ -9,7 +9,7 @@
                     <option disabled value="">-- Choisissez un casier --</option>
                     <option v-for="locker in allLockers" :key="locker._id" :value="locker._id"
                         :disabled="locker.status === 'reserved'"
-                        :class="{ 'text-gray-400': locker.status === 'reserved'}">
+                        :class="{ 'text-gray-400': locker.status === 'reserved' }">
                         Casier #{{ locker.number }} - {{ locker.size }}
                         <span v-if="locker.status === 'reserved'"> (Réservé)</span>
                     </option>
@@ -48,10 +48,15 @@ const fetchLockers = async () => {
 
 const reserveLocker = async () => {
     try {
-        await axios.post('http://localhost:3033/api/reservations', {
-            lockerId: selectedLockerId.value,
-            durationHours: durationHours.value,
-        })
+        await axios.post('http://localhost:3033/api/reservations',
+            {
+                lockerId: selectedLockerId.value,
+                durationHours: durationHours.value,
+            },
+            {
+                headers: { Authorization: `Bearer ${token}` }  
+            }
+        )
         successMessage.value = 'Réservation réussie !'
         fetchLockers()
     } catch (err) {
