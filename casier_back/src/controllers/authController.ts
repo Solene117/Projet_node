@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import { User, UserRole } from '../models/User';
-import { EmailService } from '../services/email.service';
+import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { User, UserRole } from "../models/User";
+import { EmailService } from "../services/email.service";
 
 /**
  * Génère un JWT token contenant l'ID de l'utilisateur
@@ -11,7 +11,7 @@ import { EmailService } from '../services/email.service';
  */
 const generateToken = (userId: string): string => {
   return jwt.sign({ userId }, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
@@ -30,7 +30,7 @@ export const register = async (req: Request, res: Response) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+      return res.status(400).json({ message: "Cet email est déjà utilisé" });
     }
 
     const user = await User.create({
@@ -38,17 +38,17 @@ export const register = async (req: Request, res: Response) => {
       password,
       firstName,
       lastName,
-      role: UserRole.USER
+      role: UserRole.USER,
     });
 
     const token = generateToken(user._id.toString());
 
     res.status(201).json({
-      message: 'Inscription réussie',
-      token
+      message: "Inscription réussie",
+      token,
     });
   } catch (error: any) {
-    res.status(500).json({ message: 'Erreur lors de l\'inscription', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -65,17 +65,19 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return res
+        .status(401)
+        .json({ message: "Email ou mot de passe incorrect" });
     }
 
     const token = generateToken(user._id.toString());
 
     res.json({
-      message: 'Connexion réussie',
-      token
+      message: "Connexion réussie",
+      token,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de la connexion' });
+    res.status(500).json({ message: "Erreur lors de la connexion" });
   }
 };
 
@@ -92,14 +94,16 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: 'Aucun compte associé à cet email' });
+      return res
+        .status(404)
+        .json({ message: "Aucun compte associé à cet email" });
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(resetToken)
-      .digest('hex');
+      .digest("hex");
 
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpires = new Date(Date.now() + 20 * 60 * 1000); // 20 minutes
@@ -111,10 +115,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const emailService = new EmailService();
     const emailContent = {
-        to: user.email,
-        subject: 'Réinitialisation de votre mot de passe',
-        text: `Réinitialisez votre mot de passe en cliquant sur ce lien : ${resetUrl}`,
-        html: `
+      to: user.email,
+      subject: "Réinitialisation de votre mot de passe",
+      text: `Réinitialisez votre mot de passe en cliquant sur ce lien : ${resetUrl}`,
+      html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h1 style="color: #333; text-align: center;">Réinitialisation de votre mot de passe</h1>
                 <p style="color: #666;">Vous avez demandé une réinitialisation de mot de passe.</p>
@@ -135,18 +139,24 @@ export const forgotPassword = async (req: Request, res: Response) => {
                 <p style="color: #999; font-size: 0.8em;">Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
                 <span style="color: #0066cc;">${resetUrl}</span></p>
             </div>
-        `
+        `,
+    };
+
+    if (!(await emailService.sendEmail(emailContent))) {
+      return res
+        .status(500)
+        .json({
+          message: "Erreur lors de l'envoi de l'email de réinitialisation",
+        });
     }
 
-    if (!await emailService.sendEmail(emailContent)) {
-      return res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de réinitialisation' });
-    }
-
-    res.json({ 
-      message: 'Instructions de réinitialisation envoyées par email',
+    res.json({
+      message: "Instructions de réinitialisation envoyées par email",
     });
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de réinitialisation' });
+    res.status(500).json({
+      message: "Erreur lors de l'envoi de l'email de réinitialisation",
+    });
   }
 };
 
@@ -162,18 +172,15 @@ export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, password } = req.body;
 
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(token)
-      .digest('hex');
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await User.findOne({
       resetPasswordToken: hashedToken,
-      resetPasswordExpires: { $gt: Date.now() }
+      resetPasswordExpires: { $gt: Date.now() },
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Token invalide ou expiré' });
+      return res.status(400).json({ message: "Token invalide ou expiré" });
     }
 
     user.password = password;
@@ -184,10 +191,27 @@ export const resetPassword = async (req: Request, res: Response) => {
     const newToken = generateToken(user._id.toString());
 
     res.json({
-      message: 'Mot de passe réinitialisé avec succès',
-      token: newToken
+      message: "Mot de passe réinitialisé avec succès",
+      token: newToken,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de la réinitialisation du mot de passe' });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la réinitialisation du mot de passe" });
   }
-}; 
+};
+
+export const infosUser = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Non autorisé" });
+    }
+    res.status(200).json({
+      id: req.user._id,
+      email: req.user.email,
+      role: req.user.role,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};

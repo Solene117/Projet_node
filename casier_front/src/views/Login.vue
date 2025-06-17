@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen p-4 flex justify-center items-center">
+    <div class="max-h-screen p-4 flex justify-center items-center">
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-md">
             <h1 class="text-xl font-semibold mb-4 text-blue-600 text-center">Connexion</h1>
             
@@ -60,7 +60,7 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:3033'
 
 const email = ref('')
 const password = ref('')
