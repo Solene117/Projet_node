@@ -2,7 +2,6 @@
   <div class="min-h-screen p-4">
     <div class="max-w-4xl mx-auto">
       <div class="flex flex-col space-y-8">
-        <!-- Ajout / modification - Centré -->
         <section class="flex justify-center">
           <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-md">
             <h2 class="text-xl font-semibold mb-4 text-blue-600 text-center">
@@ -69,17 +68,17 @@
         <!-- Liste des casiers -->
         <section>
           <div class="rounded-lg shadow-sm p-6">
-            <h2 class="text-xl font-semibold mb-4 text-white">Liste des casiers</h2>
+            <h2 class="text-xl font-semibold mb-4 text-white text-center">Liste des casiers</h2>
             
             <div v-if="lockers.length === 0" class="text-center py-8 text-white">
               Aucun casier enregistré
             </div>
             
-            <div v-else class="space-y-3">
+            <div v-else class="flex flex-row space-x-4">
               <div 
                 v-for="locker in lockers" 
                 :key="locker._id" 
-                class="flex items-center justify-between p-4 rounded-lg border border-gray-200 transition-colors"
+                class="flex flex-col items-center p-4 rounded-lg border border-gray-200 transition-colors"
               >
                 <div class="flex-1 gap-4">
                   <div class="font-medium text-white">
@@ -90,7 +89,7 @@
                   </div>
                 </div>
                 
-                <div class="flex gap-2 ml-4">
+                <div class="flex gap-2 mt-4">
                   <button 
                     @click="editLocker(locker)" 
                     class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
