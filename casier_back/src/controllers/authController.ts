@@ -107,7 +107,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     await user.save();
 
     // Construction de l'URL de réinitialisation
-    const resetUrl = `${process.env.FRONTEND_URL}/api/auth/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
     const emailService = new EmailService();
     const emailContent = {
