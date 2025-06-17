@@ -6,6 +6,7 @@ import {
   deleteLocker,
 } from "../controllers/lockerController";
 import { protect, restrictTo } from "../../src/middleware/auth";
+import { UserRole } from "../models/User";
 
 const router = Router();
 router.use(protect);

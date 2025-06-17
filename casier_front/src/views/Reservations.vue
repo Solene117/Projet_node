@@ -1,5 +1,5 @@
 <template>
-    <div class="rounded-lg shadow p-6 bg-white w-full max-w-xl">
+    <div class="rounded-lg shadow p-6 bg-white w-full max-w-xl mt-4">
         <h2 class="text-xl font-semibold mb-4 text-center text-green-700">Réserver un casier</h2>
 
         <form @submit.prevent="reserveLocker" class="space-y-4">
@@ -42,12 +42,20 @@ const successMessage = ref('')
 const allLockers = ref([])
 
 const fetchLockers = async () => {
-    const res = await axios.get('http://localhost:3033/api/lockers')
+  try {
+    const token = localStorage.getItem('token')
+    const res = await axios.get('http://localhost:3033/api/lockers', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     allLockers.value = res.data
+  } catch (error) {
+    console.error('Erreur récupération casiers', error)
+  }
 }
 
 const reserveLocker = async () => {
     try {
+        const token = localStorage.getItem('token')
         await axios.post('http://localhost:3033/api/reservations',
             {
                 lockerId: selectedLockerId.value,

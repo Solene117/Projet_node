@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen p-4 flex justify-center items-center">
+    <div class="max-h-screen p-4 flex justify-center">
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 w-full max-w-md">
             <h1 class="text-xl font-semibold mb-4 text-blue-600 text-center">Inscription</h1>
             
@@ -79,7 +79,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:3033'
 const firstName = ref('')
 const lastName = ref('')
 const email = ref('')
