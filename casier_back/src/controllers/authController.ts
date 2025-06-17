@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { User, UserRole } from '../models/User';
+import { EmailService } from '../services/email.service';
 
 /**
  * Génère un JWT token contenant l'ID de l'utilisateur
@@ -106,21 +107,43 @@ export const forgotPassword = async (req: Request, res: Response) => {
     await user.save();
 
     // Construction de l'URL de réinitialisation
-    const resetUrl = `${process.env.FRONTEND_URL};${process.env.PORT}/api/auth/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/api/auth/reset-password?token=${resetToken}`;
 
-    // TODO: Envoyer l'email avec l'URL de réinitialisation
-    // const emailContent = `
-    //   <h1>Réinitialisation de votre mot de passe</h1>
-    //   <p>Vous avez demandé une réinitialisation de mot de passe.</p>
-    //   <p>Cliquez sur le lien suivant pour réinitialiser votre mot de passe :</p>
-    //   <a href="${resetUrl}">Réinitialiser mon mot de passe</a>
-    //   <p>Ce lien est valable pendant 20 minutes.</p>
-    //   <p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
-    // `;
+    const emailService = new EmailService();
+    const emailContent = {
+        to: user.email,
+        subject: 'Réinitialisation de votre mot de passe',
+        text: `Réinitialisez votre mot de passe en cliquant sur ce lien : ${resetUrl}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h1 style="color: #333; text-align: center;">Réinitialisation de votre mot de passe</h1>
+                <p style="color: #666;">Vous avez demandé une réinitialisation de mot de passe.</p>
+                <p style="color: #666;">Cliquez sur le bouton ci-dessous pour réinitialiser votre mot de passe :</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${resetUrl}" 
+                       style="background-color: #4CAF50; 
+                              color: white; 
+                              padding: 12px 24px; 
+                              text-decoration: none; 
+                              border-radius: 4px; 
+                              display: inline-block;">
+                        Réinitialiser mon mot de passe
+                    </a>
+                </div>
+                <p style="color: #666;">Ce lien est valable pendant 20 minutes.</p>
+                <p style="color: #999; font-size: 0.9em;">Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+                <p style="color: #999; font-size: 0.8em;">Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
+                <span style="color: #0066cc;">${resetUrl}</span></p>
+            </div>
+        `
+    }
+
+    if (!await emailService.sendEmail(emailContent)) {
+      return res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de réinitialisation' });
+    }
 
     res.json({ 
       message: 'Instructions de réinitialisation envoyées par email',
-      resetUrl: process.env.NODE_ENV === 'dev' ? resetUrl : undefined
     });
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de réinitialisation' });
