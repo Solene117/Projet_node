@@ -18,16 +18,15 @@
           {{ activeView === 'reservation' ? 'Masquer la réservation' : 'Réserver un casier' }}
         </button>
       </div>
-
+      <RouterView />
       <Locker v-if="activeView === 'locker'" />
       <Reservation v-if="activeView === 'reservation'" />
-
-      <RouterView />
     </main>
   </div>
 </template>
 
 <script setup>
+import { RouterView } from 'vue-router';
 import { ref } from 'vue'
 import Locker from './views/Lockers.vue'
 import Reservation from './views/Reservations.vue'
@@ -40,5 +39,4 @@ const activeView = ref(null)
 function toggleView(view) {
   activeView.value = activeView.value === view ? null : view
 }
-import { RouterView } from 'vue-router';
 </script>
