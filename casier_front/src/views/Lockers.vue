@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen p-4">
+  <div class="min-h-screen">
      <ActionButtons
       :show="showActions"
       :userRole="userRole"
@@ -60,7 +60,7 @@
               Aucun casier enregistré
             </div>
 
-            <div v-else class="flex flex-row space-x-4">
+            <div v-else class="grid grid-cols-4 gap-4 flex-row">
               <div v-for="locker in lockers" :key="locker._id"
                 class="flex flex-col items-center p-4 rounded-lg border border-gray-200 transition-colors">
                 <div class="flex-1 gap-4">

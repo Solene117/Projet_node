@@ -1,7 +1,7 @@
 <template>
 
     <ActionButtons :show="showActions" :userRole="userRole" :isLoggedIn="isLoggedIn" @toggle="toggleActions" />
-    <div class="rounded-lg shadow p-6 bg-white w-full max-w-xl mt-4">
+    <div class="rounded-lg shadow p-6 bg-white w-full max-w-md min-w-md mt-4">
 
         <h2 class="text-xl font-semibold mb-4 text-center text-green-700">Réserver un casier</h2>
 
