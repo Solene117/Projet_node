@@ -1,5 +1,8 @@
 <template>
+
+    <ActionButtons :show="showActions" :userRole="userRole" :isLoggedIn="isLoggedIn" @toggle="toggleActions" />
     <div class="rounded-lg shadow p-6 bg-white w-full max-w-xl mt-4">
+
         <h2 class="text-xl font-semibold mb-4 text-center text-green-700">Réserver un casier</h2>
 
         <form @submit.prevent="reserveLocker" class="space-y-4">
@@ -35,11 +38,25 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useAuth } from '@/composables/useAuth'
+import ActionButtons from '@/components/ActionButtons.vue'
 
+const { userRole, isLoggedIn } = useAuth()
+const showActions = ref({ locker: false, reservation: false })
 const selectedLockerId = ref('')
 const durationHours = ref(1)
 const successMessage = ref('')
 const allLockers = ref([])
+
+function toggleActions(type) {
+  showActions.value[type] = !showActions.value[type]
+  const other = type === 'locker' ? 'reservation' : 'locker'
+  if (showActions.value[type]) showActions.value[other] = false
+  const route = type === 'locker' && showActions.value.locker ? '/lockers'
+              : type === 'reservation' && showActions.value.reservation ? '/reservations'
+              : null
+  if (route) router.push(route)
+}
 
 const fetchLockers = async () => {
   try {
@@ -54,24 +71,21 @@ const fetchLockers = async () => {
 }
 
 const reserveLocker = async () => {
-    try {
-        const token = localStorage.getItem('token')
-        await axios.post('http://localhost:3033/api/reservations',
-            {
-                lockerId: selectedLockerId.value,
-                durationHours: durationHours.value,
-            },
-            {
-                headers: { Authorization: `Bearer ${token}` }  
-            }
-        )
-        successMessage.value = 'Réservation réussie !'
-        fetchLockers()
-    } catch (err) {
-        console.error(err)
-        successMessage.value = 'Erreur lors de la réservation.'
-    }
+  try {
+    const token = localStorage.getItem('token')
+    await axios.post(
+      'http://localhost:3033/api/reservations',
+      { lockerId: selectedLockerId.value, durationHours: durationHours.value },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    successMessage.value = 'Réservation réussie ! Un email de confirmation vous a été envoyé.'
+    fetchLockers()
+  } catch (err) {
+    console.error(err)
+    successMessage.value = 'Erreur lors de la réservation.'
+  }
 }
 
 onMounted(fetchLockers)
 </script>
+

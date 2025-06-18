@@ -1,5 +1,11 @@
 <template>
   <div class="min-h-screen p-4">
+     <ActionButtons
+      :show="showActions"
+      :userRole="userRole"
+      :isLoggedIn="isLoggedIn"
+      @toggle="toggleActions"
+    />
     <div class="max-w-4xl mx-auto">
       <div class="flex flex-col space-y-8">
         <section class="flex justify-center">
@@ -88,10 +94,24 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import ActionButtons from '@/components/ActionButtons.vue'
+import { useAuth } from '@/composables/useAuth'
 
 const lockers = ref([]);
 const newLocker = ref({ number: null, size: '', price: null });
 const editingLocker = ref(null);
+const { userRole, isLoggedIn } = useAuth()
+const showActions = ref({ locker: false, reservation: false })
+
+function toggleActions(type) {
+  showActions.value[type] = !showActions.value[type]
+  const other = type === 'locker' ? 'reservation' : 'locker'
+  if (showActions.value[type]) showActions.value[other] = false
+  const route = type === 'locker' && showActions.value.locker ? '/lockers'
+              : type === 'reservation' && showActions.value.reservation ? '/reservations'
+              : null
+  if (route) router.push(route)
+}
 
 const getSizeLabel = (size) => {
   const sizeLabels = {
