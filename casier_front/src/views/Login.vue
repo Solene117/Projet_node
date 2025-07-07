@@ -84,8 +84,8 @@ const handleSubmit = async () => {
         localStorage.setItem('token', token)
         
         message.value = response.data.message || 'Connexion réussie !'
-        
-        router.push('/')
+
+        router.push('/reservations')
 
     } catch (err) {
         error.value = err.response?.data?.message || 'Erreur lors de la connexion'
