@@ -10,5 +10,54 @@
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
+
+const userRole = ref('user')
+const isLoggedIn = ref(false)
+const hiddenPaths = ['/register', '/login']
+const showButtons = computed(() => !hiddenPaths.includes(route.path))
+
+function goTo(path) {
+  router.push(path)
+}
+
+const showActions = ref({
+  locker: false,
+  reservation: false
+})
+
+async function checkAuth () {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    userRole.value   = 'user'
+    isLoggedIn.value = false
+    return
+  }
+
+  try {
+    const res = await fetch('http://localhost:3033/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (!res.ok) throw new Error('token invalide')
+
+    const user = await res.json()
+    // Par ex. { id: 7, name: 'Alice', role: 'admin' }
+    userRole.value   = (user.role === 'admin') ? 'admin' : 'user'
+    isLoggedIn.value = true
+  } catch (err) {
+    // Token expiré ou requête en échec ➜ on repasse “invité”
+    localStorage.removeItem('token')
+    userRole.value   = 'user'
+    isLoggedIn.value = false
+    console.warn('checkAuth :', err)
+  }
+}
+onMounted(checkAuth)
+watch(() => route.fullPath, checkAuth)
 </script>
