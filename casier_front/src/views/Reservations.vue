@@ -1,5 +1,4 @@
 <template>
-
     <ActionButtons :show="showActions" :userRole="userRole" :isLoggedIn="isLoggedIn" @toggle="toggleActions" />
     <div class="rounded-lg shadow p-6 bg-white w-full max-w-md min-w-md mt-4">
 
@@ -40,6 +39,9 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useAuth } from '@/composables/useAuth'
 import ActionButtons from '@/components/ActionButtons.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const { userRole, isLoggedIn } = useAuth()
 const showActions = ref({ locker: false, reservation: false })

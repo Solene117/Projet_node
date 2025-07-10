@@ -1,6 +1,7 @@
 <template>
   <div id="app" class="min-h-screen flex flex-col items-center">
     <header class="w-full py-6 text-center">
+      <LogoutButton :isLoggedIn="isLoggedIn" />
       <h1 class="text-3xl font-bold text-white">Gestion des casiers</h1>
     </header>
     <main>
@@ -11,8 +12,10 @@
 
 <script setup>
 import { RouterView } from 'vue-router';
+import LogoutButton from './components/LogoutButton.vue';
 import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, watch } from 'vue'
+import { useAuth } from './composables/useAuth';
 
 const router = useRouter()
 const route = useRoute()

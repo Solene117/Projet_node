@@ -1,6 +1,9 @@
 <template>
   <div class="min-h-screen flex flex-col items-center">
     <main>
+      <div v-if="!isLoggedIn" class="text-center p-6 bg-yellow-100 border border-yellow-400 rounded-lg mb-4">
+        <p class="text-yellow-800">Veuillez vous connecter pour accéder aux fonctionnalités.</p>
+      </div>
       <div class="flex gap-4 justify-center">
         <AddLockerButton :show="showActions.locker" :userRole="userRole"
                          @click="toggleActions('locker')" />
