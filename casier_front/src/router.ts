@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
   { 
     path: "/lockers", 
     component: () => import("./views/Lockers.vue"),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: "/reservations",
@@ -39,16 +39,35 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard to check authentication
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const isAuthRequired = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = localStorage.getItem('token');
-  //verify to do
-  if (isAuthRequired && !isAuthenticated) {
+  const isAdminRequired = to.matched.some(record => record.meta.requiresAdmin);
+  const token = localStorage.getItem('token');
+  
+  if (isAuthRequired && !token) {
     next('/login');
-  } else {
-    next();
+    return;
   }
+  
+  if (isAdminRequired && token) {
+    try {
+      const res = await fetch('http://localhost:3033/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error();
+      const user = await res.json();
+      
+      if (user.role !== 'admin') {
+        next('/');
+        return;
+      }
+    } catch {
+      next('/login');
+      return;
+    }
+  }
+  
+  next();
 });
 
 export default router;
