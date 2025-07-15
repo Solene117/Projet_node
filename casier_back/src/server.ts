@@ -27,7 +27,7 @@ connectDB().then(() => {
 });
 
 // PLANIFICATION cron toutes les heures
-cron.schedule("*/10 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
   console.log(
     "[Cron] Vérification des expirations de casiers",
     new Date().toISOString()
