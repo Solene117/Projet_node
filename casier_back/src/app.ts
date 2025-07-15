@@ -5,6 +5,7 @@ import reservationsRoutes from './routes/reservations.routes';
 import lockerRoutes from './routes/locker.routes';
 import emailRoutes from './routes/email.routes'
 
+
 const app = express();
 
 app.use(cors());

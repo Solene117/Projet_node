@@ -8,10 +8,11 @@ import {
 import { protect, restrictTo } from "../../src/middleware/auth";
 import { UserRole } from "../models/User";
 
+
 const router = Router();
 router.use(protect);
 
-router.get("/", getAllLockers);
+router.get('/', getAllLockers);
 router.post("/", restrictTo(UserRole.ADMIN), addLocker);
 router.put("/:id", restrictTo(UserRole.ADMIN), updateLocker);
 router.delete("/:id", restrictTo(UserRole.ADMIN), deleteLocker);
