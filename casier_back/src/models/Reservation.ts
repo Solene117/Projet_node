@@ -4,18 +4,16 @@ export interface IReservation extends Document {
   user: mongoose.Types.ObjectId;
   locker: mongoose.Types.ObjectId;
   startDate: Date;
-  endDate: Date;
   durationHours: number;
-  status: 'active' | 'expired';
+  expiresAt: Date;
 }
 
 const reservationSchema = new Schema<IReservation>({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   locker: { type: Schema.Types.ObjectId, ref: 'Locker', required: true },
   startDate: { type: Date, default: Date.now },
-  endDate: { type: Date, required: true },
   durationHours: { type: Number, required: true },
-  status: { type: String, enum: ['active', 'expired'], default: 'active' },
+  expiresAt: { type: Date, required: true}, 
 });
 
 const Reservation = mongoose.model<IReservation>('Reservation', reservationSchema);

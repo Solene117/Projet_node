@@ -52,11 +52,11 @@
         </section>
 
         <!-- Liste des casiers -->
-        <section>
+        <section class="w-max">
           <div class="rounded-lg shadow-sm p-6">
-            <h2 class="text-xl font-semibold mb-4 text-white text-center">Liste des casiers</h2>
+            <h2 class="text-xl font-semibold mb-4 text-center">Liste des casiers</h2>
 
-            <div v-if="lockers.length === 0" class="text-center py-8 text-white">
+            <div v-if="lockers.length === 0" class="text-center py-8">
               Aucun casier enregistré
             </div>
 
@@ -64,10 +64,10 @@
               <div v-for="locker in lockers" :key="locker._id"
                 class="flex flex-col items-center p-4 rounded-lg border border-gray-200 transition-colors">
                 <div class="flex-1 gap-4">
-                  <div class="font-medium text-white">
+                  <div class="font-medium">
                     Casier n°{{ locker.number }} :
                   </div>
-                  <div class="text-sm text-white">
+                  <div class="text-sm">
                     Taille : {{ getSizeLabel(locker.size) }} - Prix : {{ locker.price }} €
                   </div>
                 </div>
