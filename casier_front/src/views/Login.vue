@@ -58,6 +58,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
 const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:3033'
@@ -67,6 +68,7 @@ const password = ref('')
 const loading = ref(false)
 const message = ref('')
 const error = ref('')
+const { setToken } = useAuth()
 
 const handleSubmit = async () => {
     loading.value = true
@@ -79,13 +81,11 @@ const handleSubmit = async () => {
             password: password.value
         })
 
-        // Stocker le token JWT
         const token = response.data.token
-        localStorage.setItem('token', token)
-        
-        message.value = response.data.message || 'Connexion réussie !'
+        setToken(token)
 
-        router.push('/reservations')
+        message.value = response.data.message || 'Connexion réussie !'
+        router.push('/')
 
     } catch (err) {
         error.value = err.response?.data?.message || 'Erreur lors de la connexion'
@@ -93,6 +93,7 @@ const handleSubmit = async () => {
         loading.value = false
     }
 }
+
 </script>
 
 <style scoped>
