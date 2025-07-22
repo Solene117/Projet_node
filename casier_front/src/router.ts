@@ -32,6 +32,21 @@ const routes: RouteRecordRaw[] = [
     component: () => import("./views/Reservations.vue"),
     meta: { requiresAuth: true }
   },
+  {
+    path: "/payment",
+    component: () => import("./views/Payment.vue"),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/payment-success",
+    component: () => import("./views/PaymentSuccess.vue"),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/payment-cancel",
+    component: () => import("./views/PaymentCancel.vue"),
+    meta: { requiresAuth: true }
+  },
 ];
 
 const router = createRouter({

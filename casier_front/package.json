@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^7.5.0",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.10.0",
     "cron": "^4.3.2",

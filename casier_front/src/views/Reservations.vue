@@ -51,7 +51,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const selectedLockerId = ref('')
 const durationHours = ref(1)
 const successMessage = ref('')
@@ -72,13 +74,22 @@ const fetchLockers = async () => {
 const reserveLocker = async () => {
   try {
     const token = localStorage.getItem('token')
-    await axios.post(
+    const response = await axios.post(
       'http://localhost:3033/api/reservations',
       { lockerId: selectedLockerId.value, durationHours: durationHours.value },
       { headers: { Authorization: `Bearer ${token}` } }
     )
-    successMessage.value = 'Réservation réussie ! Un email de confirmation vous a été envoyé.'
-    fetchLockers()
+    
+    // Récupérer l'ID de la réservation créée
+    const { reservation, nextStep } = response.data
+    
+    if (nextStep && nextStep.action === 'payment') {
+      // Rediriger vers la page de paiement
+      router.push(`/payment?reservationId=${nextStep.reservationId}`)
+    } else {
+      successMessage.value = 'Réservation réussie ! Un email de confirmation vous a été envoyé.'
+      fetchLockers()
+    }
   } catch (err) {
     console.error(err)
     successMessage.value = 'Erreur lors de la réservation.'
