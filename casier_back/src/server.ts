@@ -26,8 +26,8 @@ connectDB().then(() => {
   });
 });
 
-// PLANIFICATION cron toutes les heures
-cron.schedule("*/30 * * * *", async () => {
+
+cron.schedule("*/5 * * * *", async () => {
   console.log(
     "[Cron] Vérification des expirations de casiers",
     new Date().toISOString()
@@ -39,7 +39,6 @@ cron.schedule("* * * * *", async () => {
   const now = new Date();
   const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
 
-  // Trouver les réservations qui expirent dans 5 minutes
   const reservations = await Reservation.find({
     expiresAt: {
       $gte: fiveMinutesLater,
