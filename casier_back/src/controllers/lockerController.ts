@@ -10,6 +10,15 @@ export const getAllLockers = async (_req: Request, res: Response) => {
   }
 };
 
+export const getLockerById = async (req: Request, res: Response) => {
+  try {
+    const locker = await Locker.findById(req.params.id);
+    res.json(locker);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 export const addLocker = async (req: Request, res: Response) => {
   try {
     const { number, size, price } = req.body;
