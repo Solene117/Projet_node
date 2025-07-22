@@ -27,7 +27,7 @@ connectDB().then(() => {
 });
 
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
   console.log(
     "[Cron] Vérification des expirations de casiers",
     new Date().toISOString()
