@@ -1,42 +1,29 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center">
-    <main>
-      <div v-if="!isLoggedIn" class="text-center p-6 bg-yellow-100 border border-yellow-400 rounded-lg mb-4">
-        <p class="text-yellow-800">Veuillez vous connecter pour accéder aux fonctionnalités.</p>
-      </div>
-      <div class="flex gap-4 justify-center">
-        <AddLockerButton :show="showActions.locker" :userRole="userRole"
-                         @click="toggleActions('locker')" />
-        <ReserveLockerButton :show="showActions.reservation" :isLoggedIn="isLoggedIn"
-                             @click="toggleActions('reservation')" />
-      </div>
-      <div v-if="showActions.locker">
-      </div>
-      <div v-if="showActions.reservation">
-      </div>
-    </main>
+  <div class="p-8 max-w-4xl mx-auto w-full">
+    <section class="text-center text-gray-700">
+      <h2 class="text-2xl font-semibold mb-4">Pourquoi utiliser des casiers ?</h2>
+      <p class="text-lg leading-relaxed mb-6">
+        Les casiers offrent un espace sécurisé pour stocker vos affaires personnelles.
+        Ils sont particulièrement utiles dans les lieux publics comme les universités,
+        les salles de sport, ou les espaces de coworking. Notre système permet de gérer
+        facilement la réservation et la libération de casiers pour une meilleure organisation.
+      </p>
+      <img
+        src="@/assets/lockers.jpg"
+        alt="Illustration de casiers"
+        class="mx-auto rounded-lg shadow-md max-h-[400px] object-cover"
+      />
+    </section>
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useAuth } from '@/composables/useAuth' 
-import AddLockerButton from '@/components/AddLockerButton.vue'
-import ReserveLockerButton from '@/components/ReserveLockerButton.vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
-const router = useRouter()
-const { userRole, isLoggedIn } = useAuth() 
+const currentTab = ref('home')
 
-const showActions = ref({ locker: false, reservation: false })
-
-function toggleActions(type) {
-  showActions.value[type] = !showActions.value[type]
-  const other = type === 'locker' ? 'reservation' : 'locker'
-  if (showActions.value[type]) showActions.value[other] = false
-
-  if (type === 'locker' && showActions.value.locker) router.push('/lockers')
-  else if (type === 'reservation' && showActions.value.reservation) router.push('/reservations')
+function handleChangeTab(tab) {
+  currentTab.value = tab
 }
 </script>
-

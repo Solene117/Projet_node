@@ -1,66 +1,42 @@
 <template>
-  <div id="app" class="min-h-screen flex flex-col items-center">
-    <header class="w-full py-6 text-center">
-      <LogoutButton :isLoggedIn="isLoggedIn" />
-      <h1 class="text-3xl font-bold text-white">Gestion des casiers</h1>
-    </header>
-    <main>
+  <div class="min-h-screen flex flex-col">
+    <Header :currentTab="currentTab" :userRole="userRole" :isLoggedIn="isLoggedIn" @change-tab="handleChangeTab" @logout="handleLogout"/>
+
+    <main class="flex-grow">
       <RouterView />
     </main>
+
+    <Footer />
   </div>
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router';
-import LogoutButton from './components/LogoutButton.vue';
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ref, computed, onMounted, watch } from 'vue'
-import { useAuth } from './composables/useAuth';
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
 const route = useRoute()
 
-const userRole = ref('user')
-const isLoggedIn = ref(false)
-const hiddenPaths = ['/register', '/login']
-const showButtons = computed(() => !hiddenPaths.includes(route.path))
+const currentTab = ref('home')
+const { userRole, isLoggedIn, fetchUser, logout } = useAuth()
 
-function goTo(path) {
-  router.push(path)
+
+function handleChangeTab(tab) {
+  currentTab.value = tab
+
+  if (tab === 'home') router.push('/')
+  else if (tab === 'reservation') router.push('/reservations')
+  else if (tab === 'addLocker') router.push('/lockers')
 }
 
-const showActions = ref({
-  locker: false,
-  reservation: false
-})
-
-async function checkAuth () {
-  const token = localStorage.getItem('token')
-  if (!token) {
-    userRole.value   = 'user'
-    isLoggedIn.value = false
-    return
-  }
-
-  try {
-    const res = await fetch('http://localhost:3033/api/auth/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-
-    if (!res.ok) throw new Error('token invalide')
-
-    const user = await res.json()
-    // Par ex. { id: 7, name: 'Alice', role: 'admin' }
-    userRole.value   = (user.role === 'admin') ? 'admin' : 'user'
-    isLoggedIn.value = true
-  } catch (err) {
-    // Token expiré ou requête en échec ➜ on repasse “invité”
-    localStorage.removeItem('token')
-    userRole.value   = 'user'
-    isLoggedIn.value = false
-    console.warn('checkAuth :', err)
-  }
+function handleLogout() {
+  logout()
+  router.push('/login')
 }
-onMounted(checkAuth)
-watch(() => route.fullPath, checkAuth)
+
+onMounted(fetchUser)
+watch(() => route.fullPath, fetchUser)
 </script>
