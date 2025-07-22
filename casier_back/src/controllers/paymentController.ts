@@ -102,14 +102,126 @@ export const confirmPayment = async (req: Request, res: Response) => {
           subject: 'Confirmation de votre réservation de casier',
           text: `Votre paiement de ${reservation.paymentAmount}€ pour la réservation du casier #${locker.number} a bien été reçu. Votre réservation est maintenant confirmée.`,
           html: `
-            <h2>Réservation confirmée</h2>
-            <p>Bonjour ${user.firstName},</p>
-            <p>Votre paiement de <strong>${reservation.paymentAmount}€</strong> pour la réservation du casier #${locker.number} a bien été reçu.</p>
-            <p><strong>Votre réservation est maintenant confirmée.</strong></p>
-            <p>Durée: ${reservation.durationHours} heure(s)</p>
-            <p>Date de début: ${reservation.startDate.toLocaleDateString()}</p>
-            <p>Date d'expiration: ${reservation.expiresAt.toLocaleDateString()} à ${reservation.expiresAt.toLocaleTimeString()}</p>
-            <p>Merci pour votre réservation!</p>
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Confirmation de votre réservation</title>
+              <style>
+                body {
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                  line-height: 1.6;
+                  color: #333;
+                  margin: 0;
+                  padding: 0;
+                }
+                .email-container {
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+                  background-color: #f9f9f9;
+                }
+                .header {
+                  background-color: #4CAF50;
+                  padding: 20px;
+                  text-align: center;
+                  color: white;
+                  border-radius: 8px 8px 0 0;
+                }
+                .content {
+                  background-color: white;
+                  padding: 30px;
+                  border-radius: 0 0 8px 8px;
+                  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .confirmation-box {
+                  background-color: #e8f5e9;
+                  padding: 15px;
+                  border-left: 4px solid #4CAF50;
+                  margin: 20px 0;
+                  border-radius: 4px;
+                }
+                .details {
+                  margin: 20px 0;
+                  border-collapse: collapse;
+                  width: 100%;
+                }
+                .details td {
+                  padding: 10px;
+                  border-bottom: 1px solid #eee;
+                }
+                .details td:first-child {
+                  font-weight: 600;
+                  width: 40%;
+                  color: #555;
+                }
+                .footer {
+                  text-align: center;
+                  margin-top: 30px;
+                  color: #777;
+                  font-size: 14px;
+                }
+                .btn {
+                  display: inline-block;
+                  background-color: #4CAF50;
+                  color: white;
+                  padding: 12px 25px;
+                  text-decoration: none;
+                  border-radius: 4px;
+                  font-weight: 600;
+                  margin: 20px 0;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="email-container">
+                <div class="header">
+                  <h1>Réservation Confirmée</h1>
+                </div>
+                <div class="content">
+                  <p>Bonjour ${user.firstName},</p>
+                  
+                  <div class="confirmation-box">
+                    <p>Votre paiement de <strong>${reservation.paymentAmount}€</strong> a été traité avec succès et votre réservation est maintenant confirmée.</p>
+                  </div>
+                  
+                  <h2>Détails de votre réservation</h2>
+                  <table class="details">
+                    <tr>
+                      <td>Casier</td>
+                      <td>#${locker.number} (${locker.size})</td>
+                    </tr>
+                    <tr>
+                      <td>Durée</td>
+                      <td>${reservation.durationHours} heure(s)</td>
+                    </tr>
+                    <tr>
+                      <td>Date de début</td>
+                      <td>${new Date(reservation.startDate).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</td>
+                    </tr>
+                    <tr>
+                      <td>Date d'expiration</td>
+                      <td>${new Date(reservation.expiresAt).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</td>
+                    </tr>
+                    <tr>
+                      <td>Montant payé</td>
+                      <td><strong>${reservation.paymentAmount}€</strong></td>
+                    </tr>
+                  </table>
+                  
+                  <p>Pour accéder à votre casier, utilisez votre code personnel fourni lors de l'inscription.</p>
+                  
+                  <p>Si vous avez des questions concernant votre réservation, n'hésitez pas à nous contacter.</p>
+                  
+                  <div class="footer">
+                    <p>Merci pour votre confiance !</p>
+                    <p>&copy; ${new Date().getFullYear()} Service de Casiers - Tous droits réservés</p>
+                  </div>
+                </div>
+              </div>
+            </body>
+            </html>
           `
         });
       }
@@ -221,14 +333,126 @@ export const stripeWebhook = async (req: Request, res: Response) => {
               subject: 'Confirmation de votre réservation de casier',
               text: `Votre paiement de ${reservation.paymentAmount}€ pour la réservation du casier #${locker.number} a bien été reçu. Votre réservation est maintenant confirmée.`,
               html: `
-                <h2>Réservation confirmée</h2>
-                <p>Bonjour ${user.firstName},</p>
-                <p>Votre paiement de <strong>${reservation.paymentAmount}€</strong> pour la réservation du casier #${locker.number} a bien été reçu.</p>
-                <p><strong>Votre réservation est maintenant confirmée.</strong></p>
-                <p>Durée: ${reservation.durationHours} heure(s)</p>
-                <p>Date de début: ${reservation.startDate.toLocaleDateString()}</p>
-                <p>Date d'expiration: ${reservation.expiresAt.toLocaleDateString()} à ${reservation.expiresAt.toLocaleTimeString()}</p>
-                <p>Merci pour votre réservation!</p>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <meta charset="utf-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Confirmation de votre réservation</title>
+                  <style>
+                    body {
+                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                      line-height: 1.6;
+                      color: #333;
+                      margin: 0;
+                      padding: 0;
+                    }
+                    .email-container {
+                      max-width: 600px;
+                      margin: 0 auto;
+                      padding: 20px;
+                      background-color: #f9f9f9;
+                    }
+                    .header {
+                      background-color: #4CAF50;
+                      padding: 20px;
+                      text-align: center;
+                      color: white;
+                      border-radius: 8px 8px 0 0;
+                    }
+                    .content {
+                      background-color: white;
+                      padding: 30px;
+                      border-radius: 0 0 8px 8px;
+                      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    }
+                    .confirmation-box {
+                      background-color: #e8f5e9;
+                      padding: 15px;
+                      border-left: 4px solid #4CAF50;
+                      margin: 20px 0;
+                      border-radius: 4px;
+                    }
+                    .details {
+                      margin: 20px 0;
+                      border-collapse: collapse;
+                      width: 100%;
+                    }
+                    .details td {
+                      padding: 10px;
+                      border-bottom: 1px solid #eee;
+                    }
+                    .details td:first-child {
+                      font-weight: 600;
+                      width: 40%;
+                      color: #555;
+                    }
+                    .footer {
+                      text-align: center;
+                      margin-top: 30px;
+                      color: #777;
+                      font-size: 14px;
+                    }
+                    .btn {
+                      display: inline-block;
+                      background-color: #4CAF50;
+                      color: white;
+                      padding: 12px 25px;
+                      text-decoration: none;
+                      border-radius: 4px;
+                      font-weight: 600;
+                      margin: 20px 0;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class="email-container">
+                    <div class="header">
+                      <h1>Réservation Confirmée</h1>
+                    </div>
+                    <div class="content">
+                      <p>Bonjour ${user.firstName},</p>
+                      
+                      <div class="confirmation-box">
+                        <p>Votre paiement de <strong>${reservation.paymentAmount}€</strong> a été traité avec succès et votre réservation est maintenant confirmée.</p>
+                      </div>
+                      
+                      <h2>Détails de votre réservation</h2>
+                      <table class="details">
+                        <tr>
+                          <td>Casier</td>
+                          <td>#${locker.number} (${locker.size})</td>
+                        </tr>
+                        <tr>
+                          <td>Durée</td>
+                          <td>${reservation.durationHours} heure(s)</td>
+                        </tr>
+                        <tr>
+                          <td>Date de début</td>
+                          <td>${new Date(reservation.startDate).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</td>
+                        </tr>
+                        <tr>
+                          <td>Date d'expiration</td>
+                          <td>${new Date(reservation.expiresAt).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</td>
+                        </tr>
+                        <tr>
+                          <td>Montant payé</td>
+                          <td><strong>${reservation.paymentAmount}€</strong></td>
+                        </tr>
+                      </table>
+                      
+                      <p>Pour accéder à votre casier, utilisez votre code personnel fourni lors de l'inscription.</p>
+                      
+                      <p>Si vous avez des questions concernant votre réservation, n'hésitez pas à nous contacter.</p>
+                      
+                      <div class="footer">
+                        <p>Merci pour votre confiance !</p>
+                        <p>&copy; ${new Date().getFullYear()} Service de Casiers - Tous droits réservés</p>
+                      </div>
+                    </div>
+                  </div>
+                </body>
+                </html>
               `
             });
           }
