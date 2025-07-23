@@ -3,6 +3,7 @@ import Locker from "../models/Locker";
 import Reservation from "../models/Reservation";
 import { User } from "../models/User";
 import { EmailService, EmailRequest } from "../services/email.service";
+import { PaymentStatus } from "../models/Reservation";
 
 const emailService = new EmailService();
 
@@ -13,13 +14,15 @@ export const createReservation = async (req: Request, res: Response) => {
   const expiresAt = new Date(now.getTime() + durationHours * 60 * 60 * 1000);
 
   if (!userId || !lockerId || !durationHours) {
-    return res.status(400).json({ message: "Paramètres manquants" });
+    res.status(400).json({ message: "Paramètres manquants" });
+    return;
   }
 
   try {
     const locker = await Locker.findById(lockerId);
     if (!locker) {
-      return res.status(400).json({ message: "Casier non trouvé" });
+      res.status(400).json({ message: "Casier non trouvé" });
+      return;
     }
 
     const existingReservation = await Reservation.findOne({
@@ -32,34 +35,63 @@ export const createReservation = async (req: Request, res: Response) => {
     }
 
     if (locker.status === "reserved") {
-      return res.status(400).json({ message: "Casier déjà réservé" });
+      res.status(400).json({ message: "Casier déjà réservé" });
+      return;
     }
 
+    // Calculer le prix total
+    const totalAmount = locker.price * durationHours;
+
+    // Créer la réservation avec statut de paiement en attente
     const reservation = await Reservation.create({
       user: userId,
       locker: lockerId,
       startDate: now,
       durationHours,
       expiresAt,
+      paymentStatus: PaymentStatus.PENDING,
+      paymentAmount: totalAmount,
     });
 
     locker.status = "reserved";
     await locker.save();
 
-    const user = await User.findById(userId);
-    if (user && user.email) {
-      const emailData: EmailRequest = {
-        to: user.email,
-        subject: "Confirmation de votre réservation de casier",
-        text: `Bonjour ${user.firstName},\n\nVotre réservation du casier #${locker.number} pour une durée de ${durationHours} heure(s) a été confirmée.\n\nMerci de votre confiance.`,
-        html: `<p>Bonjour ${user.firstName},</p><p>Votre réservation du casier #${locker.number} pour une durée de ${durationHours} heure(s) a été confirmée.</p><p>Merci de votre confiance.</p>`,
-      };
-      await emailService.sendEmail(emailData);
-    }
-
-    res.status(201).json(reservation);
+    res.status(201).json({
+      reservation,
+      nextStep: {
+        action: "payment",
+        message: "Veuillez procéder au paiement pour confirmer votre réservation",
+        reservationId: reservation._id
+      }
+    });
   } catch (error) {
     console.error("Erreur lors de la réservation :", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+// Ajouter une fonction pour récupérer une réservation par ID
+export const getReservationById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const reservation = await Reservation.findById(id);
+
+    if (!reservation) {
+      res.status(404).json({ message: "Réservation non trouvée" });
+      return;
+    }
+
+    // Vérifier que l'utilisateur est autorisé à voir cette réservation
+    if (reservation.user.toString() !== userId.toString()) {
+      res.status(403).json({ message: "Accès non autorisé à cette réservation" });
+      return;
+    }
+
+    res.status(200).json(reservation);
+  } catch (error) {
+    console.error("Erreur lors de la récupération de la réservation:", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };

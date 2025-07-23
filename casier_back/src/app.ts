@@ -3,7 +3,8 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import reservationsRoutes from './routes/reservations.routes';
 import lockerRoutes from './routes/locker.routes';
-import emailRoutes from './routes/email.routes'
+import emailRoutes from './routes/email.routes';
+import paymentRoutes from './routes/payment.routes';
 
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/reservations', reservationsRoutes);
 app.use('/api/lockers', lockerRoutes);
-app.use('/api/email', emailRoutes)
+app.use('/api/email', emailRoutes);
+app.use('/api/payments', paymentRoutes);
 
 export default app;

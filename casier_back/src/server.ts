@@ -19,6 +19,12 @@ if (!process.env.MONGO_URI) {
   process.exit(1);
 }
 
+// Vérification du FRONTEND_URL
+if (!process.env.FRONTEND_URL) {
+  console.warn("⚠️ FRONTEND_URL non défini dans le fichier .env. Utilisation de la valeur par défaut: http://localhost:5173");
+  process.env.FRONTEND_URL = "http://localhost:5173";
+}
+
 // Connexion à la base de données
 connectDB().then(() => {
   app.listen(PORT, () => {
