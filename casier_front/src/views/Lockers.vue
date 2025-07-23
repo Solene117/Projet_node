@@ -12,7 +12,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Numéro</label>
                 <input v-model.number="newLocker.number" type="number" placeholder="Numéro du casier" required
                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-black" />
-              </div> 
+              </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Taille</label>
@@ -64,8 +64,16 @@
                   <div class="text-sm">
                     Taille : {{ getSizeLabel(locker.size) }} - Prix : {{ locker.price }} €
                   </div>
+                  <div class="text-sm mt-1">
+                    Statut :
+                    <span :class="{
+                      'text-green-600 font-semibold': locker.status === 'free',
+                      'text-red-600 font-semibold': locker.status === 'reserved',
+                    }">
+                      {{ getStatusLabel(locker.status) }}
+                    </span>
+                  </div>
                 </div>
-
                 <div class="flex gap-2 mt-4">
                   <button @click="editLocker(locker)"
                     class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
@@ -101,6 +109,17 @@ const getSizeLabel = (size) => {
   };
   return sizeLabels[size] || size;
 };
+
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 'free':
+      return 'Libre';
+    case 'reserved':
+      return 'Reservé';
+    default:
+      return 'Inconnu';
+  }
+}
 
 const fetchLockers = async () => {
   try {

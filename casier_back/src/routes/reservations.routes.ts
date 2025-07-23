@@ -1,12 +1,17 @@
-import { Router, RequestHandler } from 'express';
-import { createReservation, getReservationById } from '../controllers/reservationController';
-import { protect } from '../../src/middleware/auth';
+import { Router, RequestHandler } from "express";
+import {
+  createReservation,
+  getReservationById,
+  getReservationsForUser,
+} from "../controllers/reservationController";
+import { protect } from "../../src/middleware/auth";
 
 const router = Router();
 
 router.use(protect);
 
-router.post('/', createReservation as RequestHandler);
-router.get('/:id', getReservationById as RequestHandler);
+router.post("/", createReservation as RequestHandler);
+router.get("/user", getReservationsForUser as RequestHandler);
+router.get("/:id", getReservationById as RequestHandler);
 
 export default router;

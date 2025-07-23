@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
 import Locker from "../models/Locker";
 import Reservation from "../models/Reservation";
-import { User } from "../models/User";
-import { EmailService, EmailRequest } from "../services/email.service";
+import { EmailService } from "../services/email.service";
 import { PaymentStatus } from "../models/Reservation";
-
-const emailService = new EmailService();
 
 export const createReservation = async (req: Request, res: Response) => {
   const { lockerId, durationHours } = req.body;
@@ -112,5 +109,20 @@ export const updateExpiredLockers = async () => {
   await Reservation.deleteMany({ _id: { $in: expiredIds } });
 
   console.log(`🔁 Libérés et supprimées ${expiredIds.length} réservations expirées.`);
+};
+
+export const getReservationsForUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?._id; // grâce à protect, req.user est disponible
+
+    const reservations = await Reservation.find({ user: userId })
+      .populate('locker') // pour avoir les infos du casier
+      .sort({ startDate: -1 });
+
+    res.status(200).json(reservations);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des réservations :', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
 };
 
